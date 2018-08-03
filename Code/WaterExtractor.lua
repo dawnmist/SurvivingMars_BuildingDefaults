@@ -39,7 +39,8 @@ local function updateWaterExtractorsWorking()
     local vaporator_production = 0
     for i=1, num_moisture_vaporators do
         local vaporator = UICity.labels.MoistureVaporator[i]
-        vaporator_production = vaporator_production + vaporator.water_production
+        -- vaporator.water.production = current production, vaporator.water_production = possible production
+        vaporator_production = vaporator_production + vaporator.water.production
     end
 
     local total_extra_required = ResourceOverviewObj.data.total_water_demand - vaporator_production
