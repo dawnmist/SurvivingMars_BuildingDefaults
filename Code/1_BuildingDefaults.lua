@@ -1,6 +1,5 @@
 local buildingGameInit = ShiftsBuilding.GameInit
 function ShiftsBuilding:GameInit(...)
-  print("ShiftsBuilding:GameInit()")
   buildingGameInit(self, ...)
   Msg("BuildingDefaultsGameInit", self)
 end
@@ -9,12 +8,9 @@ BuildingDefaults.ModFuncs.domeBuildingOpenShifts = function(building)
   building:OpenShift(1)
   building:OpenShift(2)
   building:OpenShift(3)
-  print("Opened all shifts for ", building.entity)
 end
 
 BuildingDefaults.ModFuncs.outdoorBuildingOpenShifts = function(building)
-  print("Outdoor building that has shifts: ", building.entity, building.class)
-  print("Building max workers: ", building.max_workers or "0")
   building:OpenShift(1)
   building:OpenShift(2)
   if building.max_workers == nil or building.max_workers <= 0 then
@@ -46,15 +42,11 @@ BuildingDefaults.ModFuncs.isFarm = function(building)
 end
 
 function OnMsg.BuildingDefaultsGameInit(building)
-  print("Received message BuildingDefaultsGameInit")
   if BuildingDefaults.ModFuncs.isFarm(building) then
-    print("Building is a farm:", building.entity)
     return
   elseif not IsObjInDome(building) then
-    print("Building is an outside building:", building.entity)
     BuildingDefaults.ModFuncs.outdoorBuildingOpenShifts(building)
   else
-    print("Building is a dome building:", building.entity)
     BuildingDefaults.ModFuncs.domeBuildingOpenShifts(building)
   end
 end

@@ -17,7 +17,6 @@ end
 local function setupFarmConventional(farm)
     local crop1
     local soilQuality = farm.soil_quality / const.SoilQualityScale
-    print("Setting up farm crops, soil quality:", soilQuality)
     if soilQuality < 70 then
         if IsCropAvailable("Cover Crops") then
             crop1 = "Cover Crops"
@@ -36,7 +35,6 @@ end
 
 local function steadyStateFarmConventional(farm)
     local quality = farm.soil_quality / const.SoilQualityScale
-    print("Steady state farm crops, soil quality:", quality)
     if quality > 90 then
         local crop1
         if IsCropAvailable("Cure") then
@@ -45,6 +43,8 @@ local function steadyStateFarmConventional(farm)
             crop1 = "Giant Corn"
         elseif IsCropAvailable("Quinoa") then
             crop1 = "Quinoa"
+        elseif IsCropAvailable("Giant Potatoes") then
+            crop1 = "Giant Potatoes"
         else
             crop1 = "Potatoes"
         end
@@ -100,18 +100,15 @@ local function steadyStateFarmFungal(farm)
 end
 
 local function setupFarmHydroponic(farm)
-    print("Setting up hydroponic farm crops")
     steadyStateFarmHydroponic(farm)
 end
 
 local function setupFarmFungal(farm)
-    print("Setting up fungal farm")
     steadyStateFarmFungal(farm)
 end
 
 local origFarmInit = Farm.GameInit
 function Farm:GameInit(...)
-    print("Farm:GameInit(), hydroponic?:", self.hydroponic)
     origFarmInit(self, ...)
     if self.hydroponic then
         DM_BD_HydroponicLastShift = setupFarmShifts(self, DM_BD_HydroponicLastShift)
@@ -124,7 +121,6 @@ end
 
 local origFungalFarmInit = FungalFarm.GameInit
 function FungalFarm:GameInit(...)
-    print("FungalFarm:GameInit()")
     origFungalFarmInit(self, ...)
     DM_BD_FungalLastShift = setupFarmShifts(self, DM_BD_FungalLastShift)
     setupFarmFungal(self)
@@ -141,7 +137,6 @@ end
 
 -- Update crop lists for steady-state production
 function OnMsg.FoodProduced(farm, amount_produced)
-    print("Food produced")
     if farm.hydroponic then
         steadyStateFarmHydroponic(farm)
     elseif farm.entity == "Farm" then
