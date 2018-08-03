@@ -1,33 +1,25 @@
-local function updateWaterExtractor(extractor, production)
-    local newProduction = production
-    local consumption = (extractor.water.grid.current_consumption or 0)
-    local stopped_production = production - (extractor.water_production or 0)
+local function updateWaterExtractor(extractor, total_extra_required)
+    local new_extra_requirement = total_extra_required
     local current_working = extractor.ui_working
-    --print("Updated production if stopped:", stopped_production, ", current_working:", current_working)
-    if consumption > stopped_production then
+
+    if new_extra_requirement > 0
+        or IsOnScreenNotificationShown("DustStorm")
+        or g_DustStorm
+        or g_ColdWave
+    then
         if not current_working then
-            print("Not producing enough water: turn on extractor")
+            print("turning on water extractor")
             extractor:SetUIWorking(true)
         end
-    elseif g_DustStorm then
-        if not current_working then
-            print("Duststorm - turning on water extractors")
-            extractor:SetUIWorking(true)
-        end
-    elseif IsOnScreenNotificationShown("DustStorm") then
-        if not current_working then
-            print("Duststorm Notification - turning on water extractors")
-            extractor:SetUIWorking(true)
-        end
+        new_extra_requirement = new_extra_requirement - extractor.water_production
     else
         if current_working then
-            print("No duststorm - turning off water extractors")
-            newProduction = production - extractor.water_production
+            print("turning off water extractor")
             extractor:SetUIWorking(false)
         end
     end
     extractor:UpdateWorking()
-    return newProduction
+    return new_extra_requirement
 end
 
 local origGameInit = WaterExtractor.GameInit
@@ -37,57 +29,36 @@ function WaterExtractor:GameInit(...)
 end
 
 local function updateWaterExtractorsWorking()
-    local numWaterProducers = #(UICity and UICity.labels.WaterExtractor or empty_table)
-    if (numWaterProducers == 0) then
+    local UICity = UICity
+    local num_water_extractors = #(UICity and UICity.labels.WaterExtractor or empty_table)
+    if (num_water_extractors == 0) then
         return
     end
 
-    local extraPossibleProduction = 0
-    for i = 1, numWaterProducers do
-        local extractor = UICity.labels.WaterExtractor[i]
-        if not extractor.ui_working then
-            extraPossibleProduction = extractor.water_production
-        end
+    local num_moisture_vaporators = #(UICity and UICity.labels.MoistureVaporator or empty_table)
+    local vaporator_production = 0
+    for i=1, num_moisture_vaporators do
+        local vaporator = UICity.labels.MoistureVaporator[i]
+        vaporator_production = vaporator_production + vaporator.water_production
     end
-    local firstExtractor = UICity.labels.WaterExtractor[1]
-    local production = ResourceOverviewObj.data.total_water_production
-    local consumption = ResourceOverviewObj.data.total_water_consumption
-    local throttled = firstExtractor.water.grid.current_throttled_production
-    local storage = firstExtractor.water.grid.current_storage_change
-    local totalProduction = production + throttled + extraPossibleProduction
 
-    --[[print(
-        "Current Production:",
-        production,
-        ", Throttled:",
-        throttled,
-        ", Extra:",
-        extraPossibleProduction,
-        ", Total possible production:",
-        totalProduction,
-        ", Current consumption:",
-        consumption
-    )]]
-    production = totalProduction
-    for i = 1, numWaterProducers do
+    local total_extra_required = ResourceOverviewObj.data.total_water_demand - vaporator_production
+
+    for i = 1, num_water_extractors do
         local extractor = UICity.labels.WaterExtractor[i]
-        local updated_production = updateWaterExtractor(extractor, production)
-        production = updated_production
+        total_extra_required = updateWaterExtractor(extractor, total_extra_required)
     end
 end
 
 function OnMsg.DustStorm()
-    print("OnMsg.DustStorm()")
     updateWaterExtractorsWorking()
 end
 
 function OnMsg.TriggerDustStorm()
-    print("OnMsg.TriggerDustStorm()")
     updateWaterExtractorsWorking()
 end
 
 function OnMsg.DustStormEnded()
-    print("OnMsg.DustStormEnded()")
     updateWaterExtractorsWorking()
 end
 
@@ -96,6 +67,5 @@ function OnMsg.NewHour()
 end
 
 function OnMsg.DMBDUpdatedSubsurfaceHeaterState()
-    print("OnMsg.DMBDUpdatedSubsurfaceHeaterState()")
     updateWaterExtractorsWorking()
 end
