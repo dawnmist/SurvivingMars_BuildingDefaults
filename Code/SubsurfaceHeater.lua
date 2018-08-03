@@ -1,24 +1,28 @@
 local heaterChanges = false
 
 local function hasColdEnvironment(building)
-    local x, y, z = building:GetVisualPosXYZ()
     local range = building:GetHeatRange()
     local border = building:GetHeatBorder()
-    local tooCold = building.freeze_heat
+    local hasFrozenGround = false
 
-    if GetHeatAt(building) <= tooCold then
-        return true
-    elseif GetHeatAt(x - range - border, y) <= tooCold then
-        return true
-    elseif GetHeatAt(x + range + border, y) <= tooCold then
-        return true
-    elseif GetHeatAt(x, y + range + border) <= tooCold then
-        return true
-    elseif GetHeatAt(x, y - range - border) <= tooCold then
-        return true
-    else
-        return false
-    end
+    ForEach{
+        class = "ColdSensitive",
+        area = building,
+        arearadius = range + border/2,
+        exec = function(obj)
+            local temperature = GetHeatAt(obj)
+            local tooCold = obj.penalty_heat
+            if (obj.freeze_heat > tooCold) then
+                tooCold = obj.freeze_heat
+            end
+            hasFrozenGround = temperature <= tooCold
+            if (hasFrozenGround) then
+                return "break"
+            end
+        end
+    }
+
+    return hasFrozenGround
 end
 
 local function updateSubsurfaceHeater(building)
