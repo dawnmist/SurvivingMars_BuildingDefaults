@@ -4,17 +4,16 @@ local function updateWaterExtractor(extractor, total_extra_required)
 
     if new_extra_requirement > 0
         or IsOnScreenNotificationShown("DustStorm")
+        or IsOnScreenNotificationShown("ColdWave")
         or g_DustStorm
         or g_ColdWave
     then
         if not current_working then
-            print("turning on water extractor")
             extractor:SetUIWorking(true)
         end
         new_extra_requirement = new_extra_requirement - extractor.water_production
     else
         if current_working then
-            print("turning off water extractor")
             extractor:SetUIWorking(false)
         end
     end
@@ -37,16 +36,14 @@ local function updateWaterExtractorsWorking()
 
     local num_moisture_vaporators = #(UICity and UICity.labels.MoistureVaporator or empty_table)
     local vaporator_production = 0
-    for i=1, num_moisture_vaporators do
-        local vaporator = UICity.labels.MoistureVaporator[i]
+    for key,vaporator in pairs(UICity.labels.MoistureVaporator or empty_table) do
         -- vaporator.water.production = current production, vaporator.water_production = possible production
-        vaporator_production = vaporator_production + vaporator.water.production
+        vaporator_production = vaporator_production + vaporator.water_production
     end
 
     local total_extra_required = ResourceOverviewObj.data.total_water_demand - vaporator_production
 
-    for i = 1, num_water_extractors do
-        local extractor = UICity.labels.WaterExtractor[i]
+    for key,extractor in pairs(UICity.labels.WaterExtractor) do
         total_extra_required = updateWaterExtractor(extractor, total_extra_required)
     end
 end
@@ -55,18 +52,19 @@ function OnMsg.DustStorm()
     updateWaterExtractorsWorking()
 end
 
-function OnMsg.TriggerDustStorm()
-    updateWaterExtractorsWorking()
-end
-
 function OnMsg.DustStormEnded()
     updateWaterExtractorsWorking()
 end
 
-function OnMsg.NewHour()
+-- Subsurface Heaters have just either turned on or turned off.
+function OnMsg.DMBDUpdatedSubsurfaceHeaterState()
     updateWaterExtractorsWorking()
 end
 
-function OnMsg.DMBDUpdatedSubsurfaceHeaterState()
+function OnMsg.ColdWave()
+    updateWaterExtractorsWorking()
+end
+
+function OnMsg.ColdWaveEnded()
     updateWaterExtractorsWorking()
 end

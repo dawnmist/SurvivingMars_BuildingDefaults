@@ -29,9 +29,9 @@ function BaseMetalsExtractor:GameInit(...)
 end
 
 local function updateExtractors()
-    local extractors = UICity.labels.BaseMetalsExtractor
-    for i=1,#extractors do
-        updateMetalsExtractor(extractors[i])
+    local extractors = UICity.labels.BaseMetalsExtractor or empty_table
+    for key,extractor in pairs(extractors) do
+        updateMetalsExtractor(extractor)
     end
 end
 

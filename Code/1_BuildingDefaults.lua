@@ -4,30 +4,27 @@ function ShiftsBuilding:GameInit(...)
   Msg("BuildingDefaultsGameInit", self)
 end
 
-BuildingDefaults.ModFuncs.domeBuildingOpenShifts = function(building)
+local function domeBuildingOpenShifts(building)
   building:OpenShift(1)
   building:OpenShift(2)
   building:OpenShift(3)
 end
 
-BuildingDefaults.ModFuncs.outdoorBuildingOpenShifts = function(building)
+local function outdoorBuildingOpenShifts(building)
   building:OpenShift(1)
   building:OpenShift(2)
   if building.max_workers == nil or building.max_workers <= 0 then
     building:OpenShift(3)
+  elseif UICity.tech_status["MartianbornResilience"].researched ~= nil then
+    building:OpenShift(3)
   else
-    if UICity.tech_status["MartianbornResilience"].researched ~= nil then
-      building:OpenShift(3)
-    else
-      building:CloseShift(3)
-    end
+    building:CloseShift(3)
   end
 end
 
 local function onMartianbornResilienceLearned(tech_id, city)
-  for i = 1, #(city.labels.OutsideBuildings or "") do
-    local building = city.labels.OutsideBuildings[i]
-    BuildingDefaults.ModFuncs.outdoorBuildingOpenShifts(building)
+  for key,building in pairs(city.labels.OutsideBuildings or empty_table) do
+    outdoorBuildingOpenShifts(building)
   end
 end
 
@@ -37,16 +34,16 @@ function OnMsg.TechResearched(tech_id, city)
   end
 end
 
-BuildingDefaults.ModFuncs.isFarm = function(building)
+local function isFarm(building)
   return building.entity == "Farm" or building.entity == "HydroponicFarm" or building.entity == "FungalFarm"
 end
 
 function OnMsg.BuildingDefaultsGameInit(building)
-  if BuildingDefaults.ModFuncs.isFarm(building) then
+  if isFarm(building) then
     return
   elseif not IsObjInDome(building) then
-    BuildingDefaults.ModFuncs.outdoorBuildingOpenShifts(building)
+    outdoorBuildingOpenShifts(building)
   else
-    BuildingDefaults.ModFuncs.domeBuildingOpenShifts(building)
+    domeBuildingOpenShifts(building)
   end
 end

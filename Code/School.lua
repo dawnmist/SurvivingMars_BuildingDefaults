@@ -17,8 +17,7 @@ end
 
 local function onSchoolRelatedTechLearned(tech_id)
     local UICity = UICity
-    for i = 1, #(UICity.labels.School or empty_table) do
-        local building = UICity.labels.School[i]
+    for key, building in pairs(UICity.labels.School or empty_table) do
         setupSchool(building)
     end
 end

@@ -67,8 +67,7 @@ end
 
 local function updateSubsurfaceHeatersWorking()
     heaterChanges = false
-    for i = 1, #(UICity and UICity.labels.SubsurfaceHeater or "") do
-        local building = UICity.labels.SubsurfaceHeater[i]
+    for key,building in pairs(UICity and UICity.labels.SubsurfaceHeater or empty_table) do
         updateSubsurfaceHeater(building)
     end
     if heaterChanges then
@@ -82,17 +81,10 @@ local function updateSubsurfaceHeatersWorking()
 end
 
 function OnMsg.ColdWave()
-    print("OnMsg.ColdWave() received")
-    updateSubsurfaceHeatersWorking()
-end
-
-function OnMsg.TriggerColdWave()
-    print("OnMsg.TriggerColdWave()")
     updateSubsurfaceHeatersWorking()
 end
 
 function OnMsg.ColdWaveEnded()
-    print("OnMsg.ColdWaveEnded()")
     updateSubsurfaceHeatersWorking()
 end
 

@@ -1,15 +1,11 @@
-local BuildingDefaults = BuildingDefaults
-local noop = BuildingDefaults.ComFuncs.noop
+local noop = function () end
 
 GlobalVar("DM_BD_FarmLastShift", 0)
 GlobalVar("DM_BD_HydroponicLastShift", 0)
 GlobalVar("DM_BD_FungalLastShift", 0)
 
 local function setupFarmShifts(farm, lastShift)
-    local nextShift = 1
-    if lastShift == 1 then
-        nextShift = 2
-    end
+    local nextShift = (lastShift == 1 and 2) or 1
     farm:OpenShift(nextShift)
     return nextShift
 end
