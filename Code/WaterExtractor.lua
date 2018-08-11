@@ -12,10 +12,8 @@ local function updateWaterExtractor(extractor, total_extra_required)
             extractor:SetUIWorking(true)
         end
         new_extra_requirement = new_extra_requirement - extractor.water_production
-    else
-        if current_working then
-            extractor:SetUIWorking(false)
-        end
+    elseif current_working then
+        extractor:SetUIWorking(false)
     end
     extractor:UpdateWorking()
     return new_extra_requirement
