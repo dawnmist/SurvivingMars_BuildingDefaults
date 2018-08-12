@@ -19,17 +19,11 @@ local function updateWaterExtractor(extractor, total_extra_required)
     return new_extra_requirement
 end
 
-local origGameInit = WaterExtractor.GameInit
-function WaterExtractor:GameInit(...)
-    origGameInit(self, ...)
-    updateWaterExtractor(self)
-end
-
-local function updateWaterExtractorsWorking()
+local function calculateWaterProductionNeeded()
     local UICity = UICity
     local num_water_extractors = #(UICity and UICity.labels.WaterExtractor or empty_table)
     if (num_water_extractors == 0) then
-        return
+        return 0
     end
 
     local num_moisture_vaporators = #(UICity and UICity.labels.MoistureVaporator or empty_table)
@@ -39,11 +33,22 @@ local function updateWaterExtractorsWorking()
         vaporator_production = vaporator_production + vaporator.water_production
     end
 
-    local total_extra_required = ResourceOverviewObj.data.total_water_demand - vaporator_production
+    return ResourceOverviewObj.data.total_water_demand - vaporator_production
+end
+
+local function updateWaterExtractorsWorking()
+    local UICity = UICity
+    local total_extra_required = calculateWaterProductionNeeded()
 
     for key,extractor in pairs(UICity.labels.WaterExtractor) do
         total_extra_required = updateWaterExtractor(extractor, total_extra_required)
     end
+end
+
+local origGameInit = WaterExtractor.GameInit
+function WaterExtractor:GameInit(...)
+    origGameInit(self, ...)
+    updateWaterExtractor(self, calculateWaterProductionNeeded())
 end
 
 function OnMsg.DustStorm()

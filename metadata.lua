@@ -16,8 +16,9 @@ return PlaceObj(
 			"Code/SubsurfaceHeater.lua",
 			"Code/WaterExtractor.lua"
 		},
+		'lua_revision', 233467,
 		"version", 5,
 		"saved", 1532001299,
-		"TagGameplay", true
+		"TagGameplay", true,
 	}
 )
