@@ -30,27 +30,23 @@ local function updateSubsurfaceHeater(building)
     local currentWorkingState = building.ui_working
     if hasColdEnvironment(building) then
         if not currentWorkingState then
-            print("Covers cold environment - turn SubsurfaceHeater on")
             building:SetUIWorking(true)
             heaterChanges = true
         end
     elseif g_ColdWave then
         if not currentWorkingState then
-            print("ColdWave - turn SubsurfaceHeater on")
             building:SetUIWorking(true)
             heaterChanges = true
         end
     elseif IsOnScreenNotificationShown("ColdWave") then
         if not currentWorkingState then
             -- notified that a ColdWave is approaching, turn on so they can be repaired
-            print("ColdWave Notification - turn SubsurfaceHeater on")
             building:SetUIWorking(true)
             heaterChanges = true
         end
     else
         if currentWorkingState then
-            -- not needed so turn off..."Don't be a Wally with Water"
-            print("No ColdWave - turn SubsurfaceHeater off")
+            -- not needed so turn off
             building:SetUIWorking(false)
             heaterChanges = true
         end
@@ -73,7 +69,9 @@ local function updateSubsurfaceHeatersWorking()
     if heaterChanges then
         CreateGameTimeThread(
             function()
+                -- make sure that the game has time to update water demand
                 WaitMsg("NewMinute")
+                -- notifiy other items of change of subsurface heaters state
                 Msg("DMBDUpdatedSubsurfaceHeaterState")
             end
         )
