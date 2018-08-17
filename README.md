@@ -82,10 +82,6 @@ Traits are taught in the order of:
 4. Composed
 5. Religious
 
-### Code/SolarCells.lua
-
-This will likely be removed after updating to DaVinci. It simply listens for the beginning and end of a Dust Storm and turns all Solar Cells off at the beginning and on again once it ends.
-
 ### Code/SubsurfaceHeater.lua
 
 This is used to turn the Subsurface Heaters on/off.
