@@ -12,12 +12,11 @@ return PlaceObj(
 			"Code/MartianUniversity.lua",
 			"Code/MiningBuildings.lua",
 			"Code/School.lua",
-			"Code/SolarCells.lua",
 			"Code/SubsurfaceHeater.lua",
 			"Code/WaterExtractor.lua"
 		},
-		'lua_revision', 233467,
-		"version", 5,
+		'lua_revision', 237920,
+		"version", 6,
 		"saved", 1532001299,
 		"TagGameplay", true,
 	}

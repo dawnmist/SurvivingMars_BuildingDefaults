@@ -5,8 +5,6 @@ local function updateMetalsExtractor(extractor)
     extractor:OpenShift(2)
 
     if UICity.tech_status["ExtractorAI"].researched ~= nil
-       or IsOnScreenNotificationShown("ColdWave")
-       or g_ColdWave
        or UICity.tech_status["MartianbornResilience"].researched ~= nil
     then
         extractor:OpenShift(3)
@@ -40,25 +38,4 @@ function OnMsg.TechResearched(tech_id, city)
     if tech_id == "ExtractorAI" or "MartianbornResilience" then
         updateExtractors()
 	end
-end
-
-function OnMsg.ColdWave()
-    local data = DataInstances.MapSettings_ColdWave
-    local cold_wave = data[mapdata.MapSettings_ColdWave] or data["ColdWave_VeryLow"]
-    if cold_wave then
-        CreateGameTimeThread(function()
-            local notification_time = GameTime()
-            local warn_time = GetDisasterWarningTime(cold_wave)
-            local sleep_time = warn_time - (2 * const.HourDuration)
-            -- want to trigger no earlier than 2 hours prior to cold wave triggering
-            if sleep_time > 0 then
-                Sleep(sleep_time)
-            end
-            updateExtractors()
-        end)
-    end
-end
-
-function OnMsg.ColdWaveEnded()
-    updateExtractors()
 end

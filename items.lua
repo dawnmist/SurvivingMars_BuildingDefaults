@@ -24,10 +24,6 @@ PlaceObject("ModItemCode", {
     "FileName", "Code/School.lua",
 }),
 PlaceObject("ModItemCode", {
-    "name", "SolarCells",
-    "FileName", "Code/SolarCells.lua",
-}),
-PlaceObject("ModItemCode", {
     "name", "SubsurfaceHeater",
     "FileName", "Code/SubsurfaceHeater.lua",
 }),

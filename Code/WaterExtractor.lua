@@ -28,8 +28,9 @@ local function calculateWaterProductionNeeded()
 
     local num_moisture_vaporators = #(UICity and UICity.labels.MoistureVaporator or empty_table)
     local vaporator_production = 0
-    for key,vaporator in pairs(UICity.labels.MoistureVaporator or empty_table) do
+    for i = 1, #(UICity.labels.MoistureVaporator or empty_table) do
         -- vaporator.water.production = current production, vaporator.water_production = possible production
+        local vaporator = UICity.labels.MoistureVaporator[i]
         vaporator_production = vaporator_production + vaporator.water_production
     end
 
@@ -40,7 +41,8 @@ local function updateWaterExtractorsWorking()
     local UICity = UICity
     local total_extra_required = calculateWaterProductionNeeded()
 
-    for key,extractor in pairs(UICity.labels.WaterExtractor) do
+    for i = 1, #(UICity.labels.WaterExtractor or empty_table) do
+        local extractor = UICity.labels.WaterExtractor[i]
         total_extra_required = updateWaterExtractor(extractor, total_extra_required)
     end
 end

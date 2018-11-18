@@ -19,8 +19,6 @@ local function setupFarmConventional(farm)
         else
             crop1 = "Soybeans"
         end
-    elseif IsCropAvailable("Cure") and soilQuality > 70 then
-        crop1 = "Cure"
     else
         crop1 = "Soybeans"
     end
